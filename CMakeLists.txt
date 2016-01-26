@@ -1,12 +1,21 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
 PROJECT(libgraphqlparser C CXX)
 
-SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++11")
+###############
+# ASI default settings
+list(APPEND CMAKE_MODULE_PATH "$ENV{ASI}/cmake/Modules")
+include(asv_cmake_defaults)
+asv_cmake_defaults( )
+###############
+
+IF (WIN32)
+  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++11")
+ENDIF (WIN32)
 
 FIND_PACKAGE(PythonInterp)
-IF (NOT PYTHON_VERSION_MAJOR EQUAL 2)
-  MESSAGE(FATAL_ERROR "Python 2 is required.")
-ENDIF()
+#IF (NOT PYTHON_VERSION_MAJOR EQUAL 2)
+#  MESSAGE(FATAL_ERROR "Python 2 is required.")
+#ENDIF()
 
 FIND_PROGRAM(CTYPESGEN_FOUND ctypesgen.py)
 
@@ -51,9 +60,6 @@ ADD_LIBRARY(graphqlparser SHARED
 # Ubuntu Precise; Trusty has 2.8.12.
 # TARGET_COMPILE_OPTIONS(graphqlparser PUBLIC -std=gnu++11)
 
-ADD_EXECUTABLE(dump_json_ast dump_json_ast.cpp)
-TARGET_LINK_LIBRARIES(dump_json_ast graphqlparser)
-
 FUNCTION(GENERATE_AST_FILE FILE_TYPE FILE_RELATIVE_PATH)
   ADD_CUSTOM_COMMAND(
     OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${FILE_RELATIVE_PATH}
@@ -75,6 +81,10 @@ GENERATE_AST_FILE(c_visitor_impl c/GraphQLAstForEachConcreteType.h)
 
 ADD_SUBDIRECTORY(python)
 
+#ADD_EXECUTABLE(dump_json_ast dump_json_ast.cpp)
+#TARGET_LINK_LIBRARIES(dump_json_ast graphqlparser) # dump_json needs dll
+TARGET_LINK_LIBRARIES(graphqlparser) # dump_json needs dll
+
 OPTION(test "Build tests." OFF)
 
 INSTALL(DIRECTORY c ${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_BINARY_DIR}/c DESTINATION include/graphqlparser
@@ -93,8 +103,12 @@ INSTALL(FILES
   syntaxdefs.h
   DESTINATION include/graphqlparser)
 INSTALL(TARGETS graphqlparser
-  LIBRARY DESTINATION lib)
+  LIBRARY DESTINATION lib
+  ARCHIVE DESTINATION lib)
 
+IF (WIN32)
+  add_definitions(-DYY_NO_UNISTD_H)
+endIF (WIN32)
 IF (test)
   ADD_SUBDIRECTORY(test)
 ENDIF()
