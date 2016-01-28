@@ -81,9 +81,9 @@ GENERATE_AST_FILE(c_visitor_impl c/GraphQLAstForEachConcreteType.h)
 
 ADD_SUBDIRECTORY(python)
 
-#ADD_EXECUTABLE(dump_json_ast dump_json_ast.cpp)
-#TARGET_LINK_LIBRARIES(dump_json_ast graphqlparser) # dump_json needs dll
-TARGET_LINK_LIBRARIES(graphqlparser) # dump_json needs dll
+ADD_EXECUTABLE(dump_json_ast dump_json_ast.cpp)
+TARGET_LINK_LIBRARIES(dump_json_ast graphqlparser) # dump_json needs dll
+#TARGET_LINK_LIBRARIES(graphqlparser) # dump_json needs dll
 
 OPTION(test "Build tests." OFF)
 
