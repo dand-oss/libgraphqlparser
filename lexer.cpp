@@ -58,6 +58,7 @@ typedef unsigned int flex_uint32_t;
 #endif /* ! C99 */
 
 /* Limits of integral types. */
+#ifndef _MSC_VER
 #ifndef INT8_MIN
 #define INT8_MIN               (-128)
 #endif
@@ -85,6 +86,7 @@ typedef unsigned int flex_uint32_t;
 #ifndef UINT32_MAX
 #define UINT32_MAX             (4294967295U)
 #endif
+#endif // _MSC_VER
 
 #endif /* ! FLEXINT_H */
 
@@ -1689,6 +1691,10 @@ static void yy_load_buffer_state  (yyscan_t yyscanner)
 }
 
 #ifndef __cplusplus
+#ifdef _msc_ver
+include <io.h>
+#define isatty _isattry
+#else
 extern int isatty (int );
 #endif /* __cplusplus */
     
@@ -2347,4 +2353,3 @@ static void escape(char c, char *buf) {
     }
   }
 }
-
